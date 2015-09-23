@@ -1,0 +1,92 @@
+	Exporter version: 3.0.5, Blender version: 2.75 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Python World class constructor completed
+	processing begun of camera (FreeCamera):  Camera
+	processing begun of mesh:  Plane
+		processing begun of Standard material:  Material
+		num positions      :  6
+		num normals        :  6
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  6
+	processing begun of mesh:  wheel
+		processing begun of Standard material:  wheel
+		processing begun of Standard material:  disk
+		Diffuse texture found
+			Image texture found, type:  diffuseTexture, mapped using: "UVTex"
+		processing begun of Standard material:  logo
+		Diffuse texture found
+			Image texture found, type:  diffuseTexture, mapped using: "UVTex"
+		processing begun of Standard material:  mirror
+		processing begun of multimaterial:  Lexus_LFA.Multimaterial#0
+		num positions      :  36624
+		num normals        :  36624
+		num uvs            :  73248
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  36624
+	processing begun of mesh:  tire
+		processing begun of Standard material:  tire
+		Diffuse texture found
+			Image texture found, type:  diffuseTexture, mapped using: "UVTex"
+		Bump texture found
+			Image texture found, type:  bumpTexture, mapped using: "UVTex"
+		num positions      :  2880
+		num normals        :  2880
+		num uvs            :  5760
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  2880
+	processing begun of mesh:  glass
+		processing begun of Standard material:  lightglass
+		processing begun of Standard material:  glass3
+		processing begun of Standard material:  glass2
+		processing begun of Standard material:  glass
+		processing begun of multimaterial:  Lexus_LFA.Multimaterial#1
+		num positions      :  774
+		num normals        :  774
+		num uvs            :  1548
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  774
+	processing begun of mesh:  parts
+		processing begun of Standard material:  seat
+		processing begun of Standard material:  headlight
+		Diffuse texture found
+			Image texture found, type:  diffuseTexture, mapped using: "UVTex"
+		processing begun of multimaterial:  Lexus_LFA.Multimaterial#2
+		num positions      :  7218
+		num normals        :  7218
+		num uvs            :  14436
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  7218
+	processing begun of mesh:  body
+		processing begun of Standard material:  body
+		processing begun of Standard material:  parts
+		Diffuse texture found
+			Image texture found, type:  diffuseTexture, mapped using: "UVTex"
+		processing begun of Standard material:  black2
+		processing begun of Standard material:  grill
+		Diffuse texture found
+			Image texture found, type:  diffuseTexture, mapped using: "UVTex"
+		processing begun of Standard material:  bottom2
+		processing begun of Standard material:  botoom
+		Diffuse texture found
+			Image texture found, type:  diffuseTexture, mapped using: "UVTex"
+		processing begun of Standard material:  plastic
+		registered as also a user of material:  mirror
+		registered as also a user of material:  logo
+		processing begun of multimaterial:  Lexus_LFA.Multimaterial#3
+		num positions      :  11598
+		num normals        :  11598
+		num uvs            :  23196
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  11598
+	processing begun of light (SPOT):  Lamp
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
+elapsed time:  0 min, 1.1979 secs
