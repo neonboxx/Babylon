@@ -9,61 +9,61 @@ window.addEventListener('DOMContentLoaded', function () {
     // load the 3D engine
     var engine = new BABYLON.Engine(canvas, true)
 
-    var cube;
-
-    BABYLON.SceneLoader.Load("", "LexusLFA.babylon", engine, function (newScene) {
-
-        newScene.executeWhenReady(function () {
-            // Attach camera to canvas inputs
-            newScene.activeCamera.attachControl(canvas);
-
-            // Once the scene is loaded, just register a render loop to render it
-            engine.runRenderLoop(function () {
-                newScene.render();
-            });
-        });
-
-
-    }, function (progress) {
-        // To do: give progress feedback to user
-    });
-
-    /*
-    // createScene function that creates and return the scene
     var createScene = function () {
-        // create a basic BJS Scene object
+
+        // This creates a basic Babylon Scene object (non-mesh)
         var scene = new BABYLON.Scene(engine);
 
-        // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
-        var camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene);
-        camera.checkCollisions = true;
+        // This creates and positions a free camera (non-mesh)
+        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
 
-        // target the camera to scene origin
+        // This targets the camera to scene origin
         camera.setTarget(BABYLON.Vector3.Zero());
 
-        // attach the camera to the canvas
-        camera.attachControl(canvas, false);
+        // This attaches the camera to the canvas
+        camera.attachControl(canvas, true);
 
-        // create a basic light, aiming 0,1,0 - meaning, to the sky
-        var light = new BABYLON.DirectionalLight('light1', new BABYLON.Vector3(0, 0, 10), scene);
+        // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+        var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
 
-        // create a built-in "sphere" shape; its constructor takes 5 params: name, width, depth, subdivisions, scene
-        var sphere = new BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
-        sphere.checkCollisions = true;
+        // Default intensity is 1. Let's dim the light a small amount
+        light.intensity = 0.7;
 
-        // move the sphere upward 1/2 of its height
-        sphere.position.y = 1;
+        // Our built-in 'sphere' shape. Params: name, subdivs, size, scene
+        var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
 
-        // create a built-in "ground" shape; its constructor takes the same 5 params as the sphere's one
-        var ground = new BABYLON.Mesh.CreateGround('ground1', 6, 6, 2, scene);
-        ground.checkCollisions = true;
+        // Move the sphere upward 1/2 its height    
+        sphere.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
+        var materialSphere = new BABYLON.StandardMaterial("texture1", scene);
+        materialSphere.diffuseColor = BABYLON.Color3.Red();
+        sphere.material = materialSphere;
 
-        cube = new BABYLON.Mesh.CreateBox('box', 2, scene);
-        cube.position.y = 4;
+        // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
+        var ground = BABYLON.Mesh.CreateGround("ground1", 100, 100, 1, scene);
 
-        // return the created scene
+        var car;
+
+        /*
+        //
+        // Gets one mesh from the scene
+        //
+
+        BABYLON.SceneLoader.ImportMesh("wheel", "", "LexusLFA.babylon", scene, function (newMeshes, particleSystems, skeletons) {
+
+            console.log(newMeshes);
+
+            car = newMeshes[0];
+
+            car.position = new BABYLON.Vector3(0, 5, 0);
+            car.scaling = new BABYLON.Vector3(1, 1, 1);
+
+
+        });*/
+
+
         return scene;
-    }
+
+    };
 
     // call the createScene function
     var scene = createScene();
@@ -72,7 +72,7 @@ window.addEventListener('DOMContentLoaded', function () {
     engine.runRenderLoop(function () {
         scene.render();
     });
-    */
+    
     // the canvas/window resize event handler
     window.addEventListener('resize', function () {
         engine.resize();
