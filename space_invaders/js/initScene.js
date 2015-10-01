@@ -9,7 +9,10 @@ var player;
 var ENDINGS = [];
 var keys = { left: 0, right: 0, space: 0 };
 var shot;
+var lastShotTime;
 var shots = [];
+var alien;
+var rowI, row;
 
 /**
 * Load the scene when the canvas is fully loaded
@@ -77,21 +80,21 @@ function initScene() {
     engine.runRenderLoop(function () {
         scene.render();
         shots.forEach(function (shot, index) {
-            if (shot.position.z > 35) {
-                shot.dispose();
+            if (shot.line.position.z > 35) {
+                shot.line.dispose();
                 shots.splice(index, 1);
             } else {
-                shot.position.z += .2;
+                shot.line.position.z += .2;
             }
         })
         if (keys.left === 1 && player.position.x > -22) {
-            player.position.x -= .2;
+            player.position.x -= .2 * scene.getAnimationRatio();
         }
         if (keys.right === 1 && player.position.x < 22) {
-            player.position.x += .2;
+            player.position.x += .2 * scene.getAnimationRatio();
         }
-        if (keys.space === 1 && shots.length < 3) {
-                shoot();
+        if (keys.space === 1) {
+            shoot();
         }
     })
 }
@@ -111,9 +114,37 @@ function initGame() {
 
     player.setMaterialByID("playerMat");
 
+    var alienMaterial = new BABYLON.StandardMaterial("alienMat", scene);
+    alienMaterial.diffuseColor = new BABYLON.Color3(1, 1, 0);
+
+    //Create some aliens
+    for (var i = 0; i < 50; i++) {
+        createEnemy(i);
+    }
+
 }
 
 function shoot() {
     //Get the player position and create a line from the centre of it and move in z+
-    shots.push(new BABYLON.Mesh.CreateLines("shot", [new BABYLON.Vector3(player.position.x, .5, -19), new BABYLON.Vector3(player.position.x, .5, -18)], scene, true));
+    if (shots.length > 0) {
+        lastShotTime = shots[shots.length - 1].time;
+        if (Date.now() - lastShotTime > 1000) {
+            //If over a second has elapsed they can shoot again
+            shots.push({ line: new BABYLON.Mesh.CreateLines("shot", [new BABYLON.Vector3(player.position.x, .5, -19), new BABYLON.Vector3(player.position.x, .5, -17.5)], scene, true), time: new Date() });
+        }
+    } else {
+        shots.push({ line: new BABYLON.Mesh.CreateLines("shot", [new BABYLON.Vector3(player.position.x, .5, -19), new BABYLON.Vector3(player.position.x, .5, -17.5)], scene, true), time: new Date() });
+    }
+}
+
+function createEnemy(i) {
+    rowI++;
+    alien = BABYLON.Mesh.CreateBox("", { width: 2, height: 1, depth: 2 }, scene, true);
+    if (i % 6 === 0) {
+        row++;
+        rowI = -20
+    }
+    alien.position.x = rowI += 3;
+    alien.position.z = row * -2;
+    alien.setMaterialByID("alienMat");
 }
