@@ -12,7 +12,8 @@ var shot;
 var lastShotTime;
 var shots = [];
 var alien;
-var rowI, row;
+var rowI = -20;
+var row = 0;
 
 /**
 * Load the scene when the canvas is fully loaded
@@ -138,7 +139,6 @@ function shoot() {
 }
 
 function createEnemy(i) {
-    rowI++;
     alien = BABYLON.Mesh.CreateBox("", { width: 2, height: 1, depth: 2 }, scene, true);
     if (i % 6 === 0) {
         row++;
