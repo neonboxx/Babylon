@@ -13,8 +13,11 @@ var lastShotTime;
 var shots = [];
 var aliens = [];
 var alien;
+var lastMoveTime = Date.now();
 var rowI = -20;
 var row = 0;
+var moved = false;
+var direction = 1;
 
 /**
 * Load the scene when the canvas is fully loaded
@@ -87,12 +90,27 @@ function initScene() {
                 shot.line.dispose();
                 shots.splice(index, 1);
             } else {
-                shot.line.position.z += .2;
+                shot.line.position.z += .8;
             }
         });
         //Loop each alien and move them, also check for collision
+        moved = false;
         aliens.forEach(function (alien, indexA) {
-            //Need a tick rate to limit how often they move
+            var changed= false;
+            if ((alien.position.x >= 22 || alien.position.x <= -22) && !changed) {
+                direction = -direction;
+                changed = true;
+            }
+        })
+        
+
+        aliens.forEach(function (alien, indexA) {
+
+            //Limit how often they move
+            if (Date.now() - lastMoveTime > (13 * aliens.length)) {
+                alien.position.x += 2 * direction;
+                moved = true;
+            }
             shots.forEach(function (shot, index) {
                 if (shot.line.intersectsMesh(alien, false)) {
                     alien.dispose(true);
@@ -101,6 +119,9 @@ function initScene() {
                 }
             });
         });
+        if(moved === true)
+            lastMoveTime = Date.now();
+
         if (keys.left === 1 && player.position.x > -22) {
             player.position.x -= .2 * scene.getAnimationRatio();
         }
