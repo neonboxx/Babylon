@@ -16,8 +16,10 @@ var alien;
 var lastMoveTime = Date.now();
 var rowI = -20;
 var row = 0;
+var rows = [{aliens: []}];
 var moved = false;
 var direction = 1;
+var changed = false;
 
 /**
 * Load the scene when the canvas is fully loaded
@@ -93,34 +95,39 @@ function initScene() {
                 shot.line.position.z += .8;
             }
         });
-        //Loop each alien and move them, also check for collision
-        moved = false;
-        aliens.forEach(function (alien, indexA) {
-            var changed= false;
-            if ((alien.position.x >= 22 || alien.position.x <= -22) && !changed) {
-                direction = -direction;
+        
+        changed = false;
+        rows.forEach(function (row, indexR) {
+            //Get far left, see if it's past the left side
+            if (rows[indexR].aliens[0] !== undefined && rows[indexR].aliens[0].position.x <= -22 && !changed) {
+                //It's past the left, start moving the other way
+                direction = 1;
                 changed = true;
             }
-        })
-        
-
-        aliens.forEach(function (alien, indexA) {
-
-            //Limit how often they move
-            if (Date.now() - lastMoveTime > (13 * aliens.length)) {
-                alien.position.x += 2 * direction;
-                moved = true;
+            if (rows[indexR].aliens[rows[indexR].aliens.length - 1] !== undefined && rows[indexR].aliens[rows[indexR].aliens.length - 1].position.x >= 22 && !changed) {
+                //It's past the left, start moving the other way
+                direction = -1;
+                changed = true;
             }
-            shots.forEach(function (shot, index) {
-                if (shot.line.intersectsMesh(alien, false)) {
-                    alien.dispose(true);
-                    aliens.splice(indexA, 1);
-                    shot.line.dispose(true);
-                }
-            });
         });
-        if(moved === true)
-            lastMoveTime = Date.now();
+        
+        rows.forEach(function (row, indexR) {
+
+            rows[indexR].aliens.forEach(function (alien, indexA) {
+                if (Date.now() - lastMoveTime > 700) {
+                    //TODO: Sort speed
+                    alien.position.x += 2 * direction;
+                }
+                shots.forEach(function (shot, index) {
+                    if (shot.line.intersectsMesh(alien, false)) {
+                        alien.dispose(true);
+                        rows[indexR].aliens.splice(indexA, 1);
+                        shot.line.dispose(true);
+                    }
+                });
+            });
+
+        });
 
         if (keys.left === 1 && player.position.x > -22) {
             player.position.x -= .2 * scene.getAnimationRatio();
@@ -177,16 +184,17 @@ function shoot() {
 }
 
 function createEnemy(i) {
-    rowI++;
     alien = BABYLON.Mesh.CreateBox("", { width: 2, height: 1, depth: 2 }, scene, true);
-    if (i % 6 === 0) {
+    if (i % 6 === 0 && i > 0) {
         row++;
         rowI = -20
+        rows.push({ aliens: [] });
     }
     alien.position.y = 1;
     alien.position.x = rowI += 5;
     alien.position.z = -10 + (row * 3);
     alien.setMaterialByID("alienMat");
     alien.checkCollisions = true;
-    aliens.push(alien);
+    rows[row].aliens.push(alien);
+    rowI++;
 }
