@@ -1,0 +1,16 @@
+	Exporter version: 3.0.5, Blender version: 2.75 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Python World class constructor completed
+	WARNING: No active camera has been assigned, or is not in a currently selected Blender layer
+	processing begun of mesh:  space_frig
+		processing begun of Standard material:  space_frigate_6.001
+		num positions      :  894
+		num normals        :  894
+		num uvs            :  1788
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  894
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
+elapsed time:  0 min, 0.032 secs

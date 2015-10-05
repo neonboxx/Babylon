@@ -7,21 +7,21 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Babylon Web", ".", "{0414B1
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_63871"
-		Debug.AspNetCompiler.PhysicalPath = "..\Babylon\"
+		Debug.AspNetCompiler.PhysicalPath = "..\Babylon Web\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_63871\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.VirtualPath = "/localhost_63871"
-		Release.AspNetCompiler.PhysicalPath = "..\Babylon\"
+		Release.AspNetCompiler.PhysicalPath = "..\Babylon Web\"
 		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_63871\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "63871"
-		SlnRelativePath = "..\Babylon\"
+		SlnRelativePath = "..\Babylon Web\"
 	EndProjectSection
 EndProject
 Global

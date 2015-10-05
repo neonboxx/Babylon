@@ -66,7 +66,7 @@ function initScene() {
 
     // Create babylon engine
     engine = new BABYLON.Engine(canvas, true);
-
+    
     // Create scene
     scene = new BABYLON.Scene(engine);
     scene.debugLayer.show();
@@ -81,7 +81,7 @@ function initScene() {
     // Create light
     var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 10, 0), scene);
     light.intensity = 0.7;
-
+    
     initGame();
 
     engine.runRenderLoop(function () {
@@ -97,6 +97,7 @@ function initScene() {
         });
         
         changed = false;
+        moved = false;
         rows.forEach(function (row, indexR) {
             //Get far left, see if it's past the left side
             if (rows[indexR].aliens[0] !== undefined && rows[indexR].aliens[0].position.x <= -22 && !changed) {
@@ -105,7 +106,7 @@ function initScene() {
                 changed = true;
             }
             if (rows[indexR].aliens[rows[indexR].aliens.length - 1] !== undefined && rows[indexR].aliens[rows[indexR].aliens.length - 1].position.x >= 22 && !changed) {
-                //It's past the left, start moving the other way
+                //It's past the right, start moving the other way
                 direction = -1;
                 changed = true;
             }
@@ -117,6 +118,7 @@ function initScene() {
                 if (Date.now() - lastMoveTime > 700) {
                     //TODO: Sort speed
                     alien.position.x += 2 * direction;
+                    moved = true;
                 }
                 shots.forEach(function (shot, index) {
                     if (shot.line.intersectsMesh(alien, false)) {
@@ -128,6 +130,9 @@ function initScene() {
             });
 
         });
+
+        if (moved)
+            lastMoveTime = Date.now();
 
         if (keys.left === 1 && player.position.x > -22) {
             player.position.x -= .2 * scene.getAnimationRatio();
