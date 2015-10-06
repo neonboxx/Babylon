@@ -2,7 +2,6 @@
 
 // Global variables
 var canvas, engine, scene, camera, score = 0;
-var TOAD_MODEL;
 var player;
 
 // An array to store each ending of the lane
@@ -71,79 +70,93 @@ function initScene() {
     scene = new BABYLON.Scene(engine);
     scene.debugLayer.show();
 
+    var assetsManager = new BABYLON.AssetsManager(scene);
+
+    var shipTask = assetsManager.addMeshTask("task", "", "./", "ship.babylon");
+
+    shipTask.onSuccess = function (task) {
+        player = task.loadedMeshes[0];
+    }
+
     // Create the camera
     camera = new BABYLON.FollowCamera("camera", new BABYLON.Vector3(0, 20, -60), scene);
     camera.setTarget(new BABYLON.Vector3(0, 0, 10));
     camera.attachControl(canvas);
 
-    var ground = new BABYLON.Mesh.CreateGround("ground", 50, 50, 0, scene);
+    //var ground = new BABYLON.Mesh.CreateGround("ground", 50, 50, 0, scene);
 
     // Create light
     var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 10, 0), scene);
     light.intensity = 0.7;
     
-    initGame();
 
-    engine.runRenderLoop(function () {
-        scene.render();
-        //Loop each shot and delete if its at the end of the board
-        shots.forEach(function (shot, index) {
-            if (shot.line.position.z > 35) {
-                shot.line.dispose();
-                shots.splice(index, 1);
-            } else {
-                shot.line.position.z += .8;
-            }
-        });
-        
-        changed = false;
-        moved = false;
-        rows.forEach(function (row, indexR) {
-            //Get far left, see if it's past the left side
-            if (rows[indexR].aliens[0] !== undefined && rows[indexR].aliens[0].position.x <= -22 && !changed) {
-                //It's past the left, start moving the other way
-                direction = 1;
-                changed = true;
-            }
-            if (rows[indexR].aliens[rows[indexR].aliens.length - 1] !== undefined && rows[indexR].aliens[rows[indexR].aliens.length - 1].position.x >= 22 && !changed) {
-                //It's past the right, start moving the other way
-                direction = -1;
-                changed = true;
-            }
-        });
-        
-        rows.forEach(function (row, indexR) {
+    assetsManager.onFinish = function (tasks) {
 
-            rows[indexR].aliens.forEach(function (alien, indexA) {
-                if (Date.now() - lastMoveTime > 700) {
-                    //TODO: Sort speed
-                    alien.position.x += 2 * direction;
-                    moved = true;
+        initGame();
+
+        engine.runRenderLoop(function () {
+            scene.render();
+            //Loop each shot and delete if its at the end of the board
+            shots.forEach(function (shot, index) {
+                if (shot.line.position.z > 35) {
+                    shot.line.dispose();
+                    shots.splice(index, 1);
+                } else {
+                    shot.line.position.z += .8;
                 }
-                shots.forEach(function (shot, index) {
-                    if (shot.line.intersectsMesh(alien, false)) {
-                        alien.dispose(true);
-                        rows[indexR].aliens.splice(indexA, 1);
-                        shot.line.dispose(true);
-                    }
-                });
             });
 
-        });
+            changed = false;
+            moved = false;
+            rows.forEach(function (row, indexR) {
+                //Get far left, see if it's past the left side
+                if (rows[indexR].aliens[0] !== undefined && rows[indexR].aliens[0].position.x <= -22 && !changed) {
+                    //It's past the left, start moving the other way
+                    direction = 1;
+                    changed = true;
+                }
+                if (rows[indexR].aliens[rows[indexR].aliens.length - 1] !== undefined && rows[indexR].aliens[rows[indexR].aliens.length - 1].position.x >= 22 && !changed) {
+                    //It's past the right, start moving the other way
+                    direction = -1;
+                    changed = true;
+                }
+            });
 
-        if (moved)
-            lastMoveTime = Date.now();
+            rows.forEach(function (row, indexR) {
 
-        if (keys.left === 1 && player.position.x > -22) {
-            player.position.x -= .2 * scene.getAnimationRatio();
-        }
-        if (keys.right === 1 && player.position.x < 22) {
-            player.position.x += .2 * scene.getAnimationRatio();
-        }
-        if (keys.space === 1) {
-            shoot();
-        }
-    })
+                rows[indexR].aliens.forEach(function (alien, indexA) {
+                    if (Date.now() - lastMoveTime > 700) {
+                        //TODO: Sort speed
+                        alien.position.x += 2 * direction;
+                        moved = true;
+                    }
+                    shots.forEach(function (shot, index) {
+                        if (shot.line.intersectsMesh(alien, false)) {
+                            alien.dispose(true);
+                            rows[indexR].aliens.splice(indexA, 1);
+                            shot.line.dispose(true);
+                        }
+                    });
+                });
+
+            });
+
+            if (moved)
+                lastMoveTime = Date.now();
+
+            if (keys.left === 1 && player.position.x > -22) {
+                player.position.x -= .2 * scene.getAnimationRatio();
+            }
+            if (keys.right === 1 && player.position.x < 22) {
+                player.position.x += .2 * scene.getAnimationRatio();
+            }
+            if (keys.space === 1) {
+                shoot();
+            }
+        })
+    }
+
+    assetsManager.load();
 }
 
 /**
@@ -151,13 +164,15 @@ function initScene() {
  */
 function initGame() {
 
-    player = BABYLON.Mesh.CreateBox("player", { width: 2, height: 1, depth: 2}, scene, true);
+    //player = BABYLON.Mesh.CreateBox("player", { width: 2, height: 1, depth: 2}, scene, true);
     player.position.y = 1;
     player.position.z = -20;
-    camera.setTarget(scene.getMeshByName("player").position);
+    player.rotation.y = new BABYLON.Angle.FromDegrees(90).radians();
+    camera.setTarget(scene.getMeshByName("space_frig").position);
 
     var playerMaterial = new BABYLON.StandardMaterial("playerMat", scene);
-    playerMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0); //Red
+    playerMaterial.diffuseTexture = new BABYLON.Texture("./space_frigate_6_color.png", scene);
+    playerMaterial.specularTexture = new BABYLON.Texture("./space_frigate_6_specular.png", scene)
 
     player.setMaterialByID("playerMat");
 
@@ -178,11 +193,13 @@ function shoot() {
         if (Date.now() - lastShotTime > 1000) {
             //If over a second has elapsed they can shoot again
             shot = new BABYLON.Mesh.CreateLines("shot", [new BABYLON.Vector3(player.position.x, .5, -19), new BABYLON.Vector3(player.position.x, .5, -17.5)], scene, true);
+            shot.color = new BABYLON.Color3(24, 135, 216);
             shot.checkCollisions = true;
             shots.push({ line: shot, time: new Date() });
         }
     } else {
         shot = new BABYLON.Mesh.CreateLines("shot", [new BABYLON.Vector3(player.position.x, .5, -19), new BABYLON.Vector3(player.position.x, .5, -17.5)], scene, true);
+        shot.color = new BABYLON.Color3(24, 135, 216);
         shot.checkCollisions = true;
         shots.push({ line: shot, time: new Date() });
     }
