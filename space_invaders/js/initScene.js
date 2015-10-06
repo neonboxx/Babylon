@@ -12,6 +12,7 @@ var lastShotTime;
 var shots = [];
 var aliens = [];
 var alien;
+var alienCount = 0;
 var lastMoveTime = Date.now();
 var rowI = -20;
 var row = 0;
@@ -102,7 +103,7 @@ function initScene() {
                     shot.line.dispose();
                     shots.splice(index, 1);
                 } else {
-                    shot.line.position.z += .8;
+                    shot.line.position.z += 1.2 * scene.getAnimationRatio();
                 }
             });
 
@@ -125,16 +126,19 @@ function initScene() {
             rows.forEach(function (row, indexR) {
 
                 rows[indexR].aliens.forEach(function (alien, indexA) {
-                    if (Date.now() - lastMoveTime > 700) {
+                    if (Date.now() - lastMoveTime > (20 * alienCount)) {
                         //TODO: Sort speed
                         alien.position.x += 2 * direction;
                         moved = true;
+                        if (changed)
+                            alien.position.z -= 2;
                     }
                     shots.forEach(function (shot, index) {
                         if (shot.line.intersectsMesh(alien, false)) {
                             alien.dispose(true);
                             rows[indexR].aliens.splice(indexA, 1);
                             shot.line.dispose(true);
+                            alienCount--;
                         }
                     });
                 });
@@ -215,9 +219,10 @@ function createEnemy(i) {
     }
     alien.position.y = 1;
     alien.position.x = rowI += 5;
-    alien.position.z = -10 + (row * 3);
+    alien.position.z = -4 + (row * 3);
     alien.setMaterialByID("alienMat");
     alien.checkCollisions = true;
     rows[row].aliens.push(alien);
     rowI++;
+    alienCount++;
 }
