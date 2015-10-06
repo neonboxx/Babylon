@@ -172,7 +172,8 @@ function initGame() {
 
     var playerMaterial = new BABYLON.StandardMaterial("playerMat", scene);
     playerMaterial.diffuseTexture = new BABYLON.Texture("./space_frigate_6_color.png", scene);
-    playerMaterial.specularTexture = new BABYLON.Texture("./space_frigate_6_specular.png", scene)
+    playerMaterial.specularTexture = new BABYLON.Texture("./space_frigate_6_specular.png", scene);
+    playerMaterial.emissiveTexture = new BABYLON.Texture("./space_frigate_6_illumination.png", scene);
 
     player.setMaterialByID("playerMat");
 
