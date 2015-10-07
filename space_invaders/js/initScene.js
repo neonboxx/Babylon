@@ -12,6 +12,13 @@ var lastShotTime;
 var shots = [];
 var aliens = [];
 var alien;
+var alienCenter;
+var playerVelocity = 0;
+var playerAcceleration = 0.025;
+var playerMaxSpeed = 0.3;
+var playerFriction = 0.025;
+var playerMaxLean = 45; //degrees 
+
 var alienCount = 0;
 var lastMoveTime = Date.now();
 var rowI = -20;
@@ -70,6 +77,7 @@ function initScene() {
     // Create scene
     scene = new BABYLON.Scene(engine);
     scene.debugLayer.show();
+    
 
     var assetsManager = new BABYLON.AssetsManager(scene);
 
@@ -109,30 +117,42 @@ function initScene() {
 
             changed = false;
             moved = false;
-            rows.forEach(function (row, indexR) {
-                //Get far left, see if it's past the left side
-                if (rows[indexR].aliens[0] !== undefined && rows[indexR].aliens[0].position.x <= -22 && !changed) {
-                    //It's past the left, start moving the other way
-                    direction = 1;
-                    changed = true;
-                }
-                if (rows[indexR].aliens[rows[indexR].aliens.length - 1] !== undefined && rows[indexR].aliens[rows[indexR].aliens.length - 1].position.x >= 22 && !changed) {
-                    //It's past the right, start moving the other way
-                    direction = -1;
-                    changed = true;
-                }
-            });
 
+            //rows.forEach(function (row, indexR) {
+            //    //Get far left, see if it's past the left side
+            //    if (rows[indexR].aliens[0] !== undefined && rows[indexR].aliens[0].position.x) {
+            //        //It's past the left, start moving the other way
+            //        direction = 1;
+            //        changed = true;
+            //    }
+            //    if (rows[indexR].aliens[rows[indexR].aliens.length - 1] !== undefined && rows[indexR].aliens[rows[indexR].aliens.length - 1].position.x >= 22 && !changed) {
+            //        //It's past the right, start moving the other way
+            //        direction = -1;
+            //        ;
+            //    }
+            //});
+            if (Date.now() - lastMoveTime > (20 * alienCount)) {
+
+                if ((alienCenter.x <= -22 && !changed) || (alienCenter.x >= 22 && !changed)) {
+                    direction = -direction;
+                    alienCenter.z -= 1;
+                    changed = true
+                }
+
+                alienCenter.x += 2 * direction;
+                moved = true;
+            }
             rows.forEach(function (row, indexR) {
 
                 rows[indexR].aliens.forEach(function (alien, indexA) {
-                    if (Date.now() - lastMoveTime > (20 * alienCount)) {
-                        //TODO: Sort speed
-                        alien.position.x += 2 * direction;
-                        moved = true;
-                        if (changed)
-                            alien.position.z -= 2;
-                    }
+                    //
+                    //    //TODO: Sort speed
+                    //    alien.position.x += 2 * direction;
+                    //    moved = true;
+                    //    if (changed)
+                    //        alien.position.z -= 2;
+                    //}
+                    alien.position = alienCenter.add(alien.offsetPosition);
                     shots.forEach(function (shot, index) {
                         if (shot.line.intersectsMesh(alien, false)) {
                             alien.dispose(true);
@@ -148,15 +168,38 @@ function initScene() {
             if (moved)
                 lastMoveTime = Date.now();
 
+            playerVelocity *= 1-playerFriction;
+
             if (keys.left === 1 && player.position.x > -22) {
-                player.position.x -= .2 * scene.getAnimationRatio();
+                //player.position.x -= .2 * scene.getAnimationRatio();
+                if(playerVelocity > -playerMaxSpeed)
+                {
+                    playerVelocity -= playerAcceleration;
+                }
             }
-            if (keys.right === 1 && player.position.x < 22) {
-                player.position.x += .2 * scene.getAnimationRatio();
+            if (keys.right === 1) {
+                //player.position.x += .2 * scene.getAnimationRatio();
+                if (playerVelocity < playerMaxSpeed) {
+                    playerVelocity += playerAcceleration;
+                }
             }
             if (keys.space === 1) {
                 shoot();
             }
+
+            player.position.x += playerVelocity * scene.getAnimationRatio();
+            //console.log(playerVelocity)
+            if (player.position.x > 22)
+            {
+                player.position.x = 22
+                playerVelocity = 0;
+            }
+            if (player.position.x < -22)
+            {
+                player.position.x = -22
+                playerVelocity = 0;
+            }
+            player.rotation.x = BABYLON.Angle.FromDegrees(playerMaxLean * (playerVelocity/playerMaxSpeed)).radians()
         })
     }
 
@@ -170,8 +213,9 @@ function initGame() {
 
     //player = BABYLON.Mesh.CreateBox("player", { width: 2, height: 1, depth: 2}, scene, true);
     player.position.y = 1;
-    player.position.z = -20;
+    player.position.z = -30;
     player.rotation.y = new BABYLON.Angle.FromDegrees(90).radians();
+    alienCenter = new BABYLON.Vector3(0, 1, 10);
     camera.setTarget(scene.getMeshByName("space_frig").position);
 
     var playerMaterial = new BABYLON.StandardMaterial("playerMat", scene);
@@ -222,6 +266,7 @@ function createEnemy(i) {
     alien.position.z = -4 + (row * 3);
     alien.setMaterialByID("alienMat");
     alien.checkCollisions = true;
+    alien.offsetPosition = alienCenter.subtract(alien.position);
     rows[row].aliens.push(alien);
     rowI++;
     alienCount++;
